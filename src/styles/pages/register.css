@@ -1,37 +1,23 @@
-.header {
-  background-color: #2b2f47;
-  padding: 20px 40px;
-  margin-bottom: 40px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.register-content {
+  height: auto;
+  padding: 20px 20px;
+  margin: 0;
 }
 
-.header h3 {
-  color: #d8dcfa;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.header img {
-  max-width: 160px;
-}
-
-.formRegister .block {
+.register-content .formRegister .block {
   padding: 15px;
   margin-bottom: 20px;
 }
 
 
-.formRegister .block h3 {
+.register-content .formRegister .block h3 {
   color: #7f84a5;
   font-size: 18px;
   font-weight: 500;
   margin-bottom: 15px;
 }
 
-.formRegister .block .MuiTextField-root, .formRegister .block .MuiFormControl-root {
-  margin-bottom: 10px;
+.register-content .formRegister .block .MuiTextField-root, .formRegister .block .MuiFormControl-root {
+  margin-bottom: 0px;
   margin-top: 10px;
 }
