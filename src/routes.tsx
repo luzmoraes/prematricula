@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Route, Switch, Redirect, RouteProps } from 'react-router-dom'
+import { BrowserRouter, Switch } from 'react-router-dom'
 
 import BlankRoute from './layouts/blank/route'
 import MainPrivateRoute from './layouts/main/route'
@@ -13,7 +13,7 @@ const Routes = () => {
     <BrowserRouter>
       <Switch>
         <BlankRoute exact path="/" component={Login} />
-        <MainPrivateRoute exact path="/prematricula" component={Register} />
+        <BlankRoute exact path="/prematricula" component={Register} showHeader />
         <MainPrivateRoute exact path="/lista" component={List} />
       </Switch>
     </BrowserRouter>

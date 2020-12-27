@@ -17,7 +17,7 @@ export const login = async ({ email, password }: LoginProps) => {
 
   const data = {
     grant_type: process.env.REACT_APP_CLIENT_INFO_GRANT_TYPE,
-    client_id: 2,
+    client_id: process.env.REACT_APP_CLIENT_ID,
     client_secret: process.env.REACT_APP_CLIENT_INFO_SECRET,
     scope: '',
     username: email,
@@ -27,7 +27,8 @@ export const login = async ({ email, password }: LoginProps) => {
   try {
 
     const response = await api.post('/oauth/token', data);
-    const { access_token, refresh_token } = response.data
+    // const { access_token, refresh_token } = response.data
+    const { access_token } = response.data
 
     setToken(access_token)
 

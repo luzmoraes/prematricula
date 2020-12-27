@@ -1,4 +1,4 @@
-import React, { ContextType, createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 
 type ContextProps = {
   title: string
