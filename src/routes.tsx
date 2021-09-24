@@ -13,7 +13,8 @@ const Routes = () => {
     <BrowserRouter>
       <Switch>
         <BlankRoute exact path="/" component={Login} />
-        <BlankRoute exact path="/prematricula" component={Register} showHeader />
+        {/* <BlankRoute exact path="/prematricula" component={Register} showHeader /> */}
+        <MainPrivateRoute exact path="/prematricula" component={Register} />
         <MainPrivateRoute exact path="/lista" component={List} />
       </Switch>
     </BrowserRouter>
