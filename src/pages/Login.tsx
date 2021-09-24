@@ -2,14 +2,27 @@ import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Formik } from 'formik'
 import { Button, Card, Container, TextField } from '@material-ui/core'
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from '@material-ui/lab/Alert';
 import * as yup from 'yup'
 import { login } from '../services/auth'
-import { setUser } from '../services/user';
+import { getAuthenticatedUser, setUser } from '../services/user';
 
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import '../styles/pages/login.css'
 
+const useStyles = makeStyles((theme: Theme) => 
+  createStyles({
+    iconLoading: {
+      color: '#ffffff',
+      marginLeft: 10
+    }
+  })
+)
+
 const Login = () => {
+
+  const classes = useStyles();
 
   let history = useHistory()
 
@@ -37,11 +50,11 @@ const Login = () => {
           }}
           validationSchema={validationSchema}
           onSubmit={async (values, actions) => {
-
             const response = await login(values)
 
             if (response.success) {
-              setUser()
+              const user = await getAuthenticatedUser()
+              setUser(user)
               history.push('/lista')
             } else {
               setMessage(response.codeError === 401
@@ -93,7 +106,7 @@ const Login = () => {
                   fullWidth
                   className="btn-login"
                 >
-                  ACESSAR
+                  ACESSAR {isSubmitting && <CircularProgress size={20} className={classes.iconLoading} />}
                 </Button>
                 {showAlert &&
                   <Alert severity="error" className="alert">{message}</Alert>
