@@ -1,9 +1,10 @@
 import { Box, Button, Card, FormControl, FormControlLabel, FormGroup, FormHelperText, Grid, InputLabel, MenuItem, OutlinedInput, Switch, TextField } from '@material-ui/core'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 
 import { formatData, insert } from '../services/enrollment'
+import { searchAddressFromCep } from '../services/address'
 import { useApp } from '../context/App'
 
 import MaskedInput from 'react-text-mask'
@@ -13,6 +14,7 @@ import '../styles/pages/register.css'
 import { responsibleProps } from '../interfaces/responsible'
 import { studentProps } from '../interfaces/student'
 import { financialResponsibleProps } from '../interfaces/financialResponsible'
+import { addressProps } from '../interfaces/address'
 
 interface enrollmentProps {
   responsible: responsibleProps,
@@ -76,6 +78,23 @@ const Register = () => {
   useEffect(() => {
     setTitle('PRÉ-MATRÍCULA')
   })
+
+  const responsibleAddressNumberRef = useRef<HTMLInputElement>(null)
+
+  const searchAddress = async (strCep: String, setFieldValue: any) => {
+    const cep = strCep.replace(/[^0-9]/g,'')
+    if (cep.length === 8) {
+      const { data } = await searchAddressFromCep(cep);
+      
+      if (!data.hasOwnProperty('erro')) {
+        setFieldValue('responsibleAddress', data.logradouro)
+        setFieldValue('responsibleNeighborhood', data.bairro)
+        setFieldValue('responsibleCity', data.localidade)
+        setFieldValue('responsibleState', data.uf)
+        responsibleAddressNumberRef.current?.focus()
+      }
+    }
+  }
 
   const validationSchema = yup.object().shape({
     responsibleCpf: yup
@@ -278,7 +297,7 @@ const Register = () => {
           }, 2000);
         }}
       >
-        {({ handleSubmit, handleChange, handleReset, values, touched, dirty, isSubmitting, errors }) => (
+        {({ handleSubmit, handleChange, handleReset, values, touched, dirty, isSubmitting, errors, setFieldValue }) => (
           <form onSubmit={handleSubmit} className="formRegister" noValidate autoComplete="off">
             <Card className="block">
               <h3>DADOS DO RESPONSÁVEL</h3>
@@ -367,7 +386,10 @@ const Register = () => {
                     <OutlinedInput
                       id="responsibleCep"
                       value={values.responsibleCep}
-                      onChange={handleChange}
+                      onChange={e => {
+                        handleChange(e)
+                        searchAddress(e.target.value, setFieldValue)
+                      }}
                       label="CEP *"
                       inputComponent={CepMaskCustom as any}
                       error={(!!errors.responsibleCep && !!touched.responsibleCep) && !!errors.responsibleCep}
@@ -394,6 +416,7 @@ const Register = () => {
                   <TextField
                     id="responsibleNumber"
                     name="responsibleNumber"
+                    inputRef={responsibleAddressNumberRef}
                     label="Número *"
                     variant="outlined"
                     size="medium"
