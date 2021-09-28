@@ -5,6 +5,7 @@ import * as yup from 'yup'
 
 import { formatData, insert } from '../services/enrollment'
 import { searchAddressFromCep } from '../services/address'
+import { checkResponsibleCpf } from '../services/responsible'
 import { useApp } from '../context/App'
 
 import MaskedInput from 'react-text-mask'
@@ -81,6 +82,7 @@ const Register = () => {
 
   const responsibleAddressNumberRef = useRef<HTMLInputElement>(null)
   const studentAddressNumberRef = useRef<HTMLInputElement>(null)
+  const responsibleRelationshipRef = useRef<HTMLInputElement>(null)
 
   const searchAddress = async (strCep: string, setFieldValue: any, searchTo: string) => {
     const cep = strCep.replace(/[^0-9]/g,'')
@@ -101,6 +103,28 @@ const Register = () => {
           setFieldValue('studentState', data.uf)
           studentAddressNumberRef.current?.focus()
         }
+      }
+    }
+  }
+
+  const checkCpf = async (strCpf: string, setFieldValue: any, searchTo: string) => {
+    const cpf = strCpf.replace(/[^0-9]/g,'')
+    if (cpf.length === 11) {
+      const { data } = await checkResponsibleCpf(cpf);
+      if (data) {
+        setFieldValue('responsibleRg', data.rg)
+        setFieldValue('responsibleName', data.name)
+        setFieldValue('responsibleEmail', data.email)
+        setFieldValue('responsibleCep', data.cep)
+        setFieldValue('responsibleAddress', data.address)
+        setFieldValue('responsibleNumber', data.number)
+        setFieldValue('responsibleNeighborhood', data.neighborhood)
+        setFieldValue('responsibleCity', data.city)
+        setFieldValue('responsibleState', data.state)
+        setFieldValue('responsibleComplement', data.complement)
+        setFieldValue('responsibleNationality', data.nationality)
+        setFieldValue('responsibleProfession', data.profession)
+        responsibleRelationshipRef.current?.focus()
       }
     }
   }
@@ -333,7 +357,10 @@ const Register = () => {
                     <OutlinedInput
                       id="responsibleCpf"
                       value={values.responsibleCpf}
-                      onChange={handleChange}
+                      onChange={e => {
+                        handleChange(e)
+                        checkCpf(e.target.value, setFieldValue, 'responsible')
+                      }}
                       label="CPF *"
                       inputComponent={CpfMaskCustom as any}
                       error={(!!errors.responsibleCpf && !!touched.responsibleCpf) && !!errors.responsibleCpf}
@@ -359,6 +386,7 @@ const Register = () => {
                 <Grid item xs={12} md={4}>
                   <TextField
                     id="responsibleRelationship"
+                    inputRef={responsibleRelationshipRef}
                     select
                     variant="outlined"
                     fullWidth
