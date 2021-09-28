@@ -80,20 +80,45 @@ const Register = () => {
   })
 
   const responsibleAddressNumberRef = useRef<HTMLInputElement>(null)
+  const studentAddressNumberRef = useRef<HTMLInputElement>(null)
 
-  const searchAddress = async (strCep: String, setFieldValue: any) => {
+  const searchAddress = async (strCep: string, setFieldValue: any, searchTo: string) => {
     const cep = strCep.replace(/[^0-9]/g,'')
     if (cep.length === 8) {
       const { data } = await searchAddressFromCep(cep);
       
       if (!data.hasOwnProperty('erro')) {
-        setFieldValue('responsibleAddress', data.logradouro)
-        setFieldValue('responsibleNeighborhood', data.bairro)
-        setFieldValue('responsibleCity', data.localidade)
-        setFieldValue('responsibleState', data.uf)
-        responsibleAddressNumberRef.current?.focus()
+        if (searchTo === 'responsible') {
+          setFieldValue('responsibleAddress', data.logradouro)
+          setFieldValue('responsibleNeighborhood', data.bairro)
+          setFieldValue('responsibleCity', data.localidade)
+          setFieldValue('responsibleState', data.uf)
+          responsibleAddressNumberRef.current?.focus()
+        } else if (searchTo === 'student') {
+          setFieldValue('studentAddress', data.logradouro)
+          setFieldValue('studentNeighborhood', data.bairro)
+          setFieldValue('studentCity', data.localidade)
+          setFieldValue('studentState', data.uf)
+          studentAddressNumberRef.current?.focus()
+        }
       }
     }
+  }
+
+  const cloneAddress = (data: addressProps, setFieldValue: any) => {
+    setFieldValue('studentCep', data.cep)
+    setFieldValue('studentAddress', data.address)
+    setFieldValue('studentNeighborhood', data.neighborhood)
+    setFieldValue('studentCity', data.city)
+    setFieldValue('studentState', data.state)
+    setFieldValue('studentNumber', data.number)
+    setFieldValue('studentComplement', data.complement)
+  }
+
+  const cloneResponsible = (data: financialResponsibleProps, setFieldValue: any) => {
+    setFieldValue('financialResponsibleCpf', data.cpf)
+    setFieldValue('financialResponsibleName', data.name)
+    setFieldValue('financialResponsibleEmail', data.email)
   }
 
   const validationSchema = yup.object().shape({
@@ -388,7 +413,7 @@ const Register = () => {
                       value={values.responsibleCep}
                       onChange={e => {
                         handleChange(e)
-                        searchAddress(e.target.value, setFieldValue)
+                        searchAddress(e.target.value, setFieldValue, 'responsible')
                       }}
                       label="CEP *"
                       inputComponent={CepMaskCustom as any}
@@ -651,13 +676,40 @@ const Register = () => {
                 )}
               </Grid>
               <Grid container spacing={3}>
+                <Grid item xs={12} md={12}>
+                  <Box mt={1}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      type="button"
+                      size="medium"
+                      onClick={() => cloneAddress({
+                        cep: values.responsibleCep,
+                        address: values.responsibleAddress,
+                        neighborhood: values.responsibleNeighborhood,
+                        city: values.responsibleCity,
+                        state: values.responsibleState,
+                        number: values.responsibleNumber,
+                        complement: values.responsibleComplement
+                      }, setFieldValue)}
+                      disabled={!dirty || isSubmitting}
+                    >
+                      Mesmo endereço do responsável
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
+              <Grid container spacing={3}>
                 <Grid item xs={12} md={3}>
                   <FormControl variant="outlined" fullWidth>
                     <InputLabel htmlFor="responsibleCep" error={(!!errors.responsibleCep && !!touched.responsibleCep) && !!errors.responsibleCep}>CEP *</InputLabel>
                     <OutlinedInput
                       id="studentCep"
                       value={values.studentCep}
-                      onChange={handleChange}
+                      onChange={e => {
+                        handleChange(e)
+                        searchAddress(e.target.value, setFieldValue, 'student')
+                      }}
                       label="CEP *"
                       inputComponent={CepMaskCustom as any}
                       error={(!!errors.studentCep && !!touched.studentCep) && !!errors.studentCep}
@@ -684,6 +736,7 @@ const Register = () => {
                   <TextField
                     id="studentNumber"
                     name="studentNumber"
+                    inputRef={studentAddressNumberRef}
                     label="Número *"
                     variant="outlined"
                     size="medium"
@@ -851,6 +904,26 @@ const Register = () => {
 
             <Card className="block">
               <h3>RESPONSÁVEL FINANCEIRO</h3>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={12}>
+                  <Box mt={1}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      type="button"
+                      size="medium"
+                      onClick={() => cloneResponsible({
+                        cpf: values.responsibleCpf,
+                        name: values.responsibleName,
+                        email: values.responsibleEmail,
+                      }, setFieldValue)}
+                      disabled={!dirty || isSubmitting}
+                    >
+                      Mesmo do responsável
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
               <Grid container spacing={3}>
                 <Grid item xs={12} md={6}>
                   <FormControl variant="outlined" fullWidth>

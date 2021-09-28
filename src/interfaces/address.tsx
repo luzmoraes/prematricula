@@ -1,12 +1,9 @@
 export interface addressProps {
   cep: string
-  logradouro: string
-  complemento: string
-  bairro: string
-  localidade: string
-  uf: string
-  ibge: string
-  gia: string
-  ddd: string
-  siafi: string
+  address: string
+  neighborhood: string
+  city: string
+  state: string
+  number: string
+  complement: string
 }
